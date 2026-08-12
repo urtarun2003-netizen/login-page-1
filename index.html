@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="login-box">
+    <h2>Login</h2>
+
+    <form id="loginForm">
+      <label>Username or Email</label>
+      <input type="text" id="username" placeholder="Enter username or email" required>
+
+      <label>Password</label>
+      <div class="password-row">
+        <input type="password" id="password" placeholder="Enter password" required>
+        <button type="button" id="showPassword">Show</button>
+      </div>
+
+      <div class="options">
+        <label class="remember">
+          <input type="checkbox"> Remember me
+        </label>
+        <a href="#">Forgot password?</a>
+      </div>
+
+      <button class="login-button" type="submit">Login</button>
+
+      <p id="message"></p>
+    </form>
+
+    <p class="signup">Don't have an account? <a href="#">Sign up</a></p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
