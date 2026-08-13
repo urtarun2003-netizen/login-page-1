@@ -5,7 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+        if (!localStorage.getItem("vibemix_session_v1")) {
+            window.location.href = "index.html";
+        }
+    </script>
+
 </head>
 <body>
     <!-- Floating Background Particles -->

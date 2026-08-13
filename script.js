@@ -1,7 +1,3 @@
-const SUPABASE_URL="https://fqvgmhtlrfpeljsltpny.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY="sb_publishable_wt28cfgACFMJdCZzmNQ6sA_adoF5NoP";
-const supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
-
 // Theme Toggle Logic
 function initTheme() {
     const root = document.documentElement;
@@ -55,105 +51,158 @@ if (enterBtn && welcomeScreen && loginWrapper) {
     });
 }
 
-// Authentication Logic
-// User ID is used in the UI. Supabase's email/password auth is kept internally
-// by mapping each User ID to a syntactically valid internal auth address.
-function userIdToAuthEmail(userId) {
-    return userId.trim().toLowerCase().replace(/[^a-z0-9._-]/g, "_") + "@vibemix.com";
+
+// ------------------------------------------------------------
+// VIBEMIX USER ID + PASSWORD AUTHENTICATION
+// ------------------------------------------------------------
+// This version does not use email authentication or Supabase.
+// Accounts are stored in this browser's localStorage.
+// For a public multi-device website, replace this with a real
+// server/database authentication service before production use.
+
+const USERS_KEY = "vibemix_users_v1";
+const SESSION_KEY = "vibemix_session_v1";
+
+function getUsers() {
+    try { return JSON.parse(localStorage.getItem(USERS_KEY) || "{}"); }
+    catch { return {}; }
 }
 
-const loginForm=document.getElementById("loginForm");
-if(loginForm)loginForm.addEventListener("submit",async e=>{
-    e.preventDefault();
-    const userId=document.getElementById("userId").value.trim();
-    const password=document.getElementById("password").value;
-    const message=document.getElementById("message");
+function saveUsers(users) {
+    localStorage.setItem(USERS_KEY, JSON.stringify(users));
+}
 
-    if(userId.length < 3){
-        message.textContent="Please enter a valid User ID.";
-        message.className="error-message";
-        return;
-    }
+function normaliseUserId(value) {
+    return value.trim().toLowerCase();
+}
 
-    message.textContent="Checking login...";
-    message.className="loading-message";
+// Registration
+const registerForm = document.getElementById("registerForm");
+if (registerForm) {
+    registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    const {error}=await supabaseClient.auth.signInWithPassword({
-        email:userIdToAuthEmail(userId),
-        password
-    });
+        const userId = document.getElementById("registerUserId").value.trim();
+        const password = document.getElementById("registerPassword").value;
+        const confirm = document.getElementById("confirmPassword").value;
+        const message = document.getElementById("registerMessage");
+        const users = getUsers();
 
-    if(error){
-        message.textContent="Invalid User ID or password.";
-        message.className="error-message";
-        const panel=document.querySelector(".glass-panel");
-        if(panel){
-            panel.classList.remove("login-error");
-            void panel.offsetWidth;
-            panel.classList.add("login-error");
+        if (!/^[A-Za-z0-9._-]{3,30}$/.test(userId)) {
+            message.textContent = "Please choose a User ID with 3–30 letters, numbers, . _ or -.";
+            message.className = "error-message";
+            return;
         }
-        return;
-    }
 
-    message.textContent="Login successful! ❤️";
-    message.className="success-message";
-    setTimeout(()=>location.href="dashboard.html",500);
-});
+        const key = normaliseUserId(userId);
 
-const registerForm=document.getElementById("registerForm");
-if(registerForm)registerForm.addEventListener("submit",async e=>{
-    e.preventDefault();
-
-    const userId=document.getElementById("registerUserId").value.trim();
-    const password=document.getElementById("registerPassword").value;
-    const confirm=document.getElementById("confirmPassword").value;
-    const message=document.getElementById("registerMessage");
-
-    if(!/^[A-Za-z0-9._-]{3,30}$/.test(userId)){
-        message.textContent="User ID must be 3–30 characters: letters, numbers, ., _ or -.";
-        message.className="error-message";
-        return;
-    }
-
-    if(password!==confirm){
-        message.textContent="Passwords do not match.";
-        message.className="error-message";
-        return;
-    }
-
-    message.textContent="Creating account...";
-    message.className="loading-message";
-
-    const {error}=await supabaseClient.auth.signUp({
-        email:userIdToAuthEmail(userId),
-        password,
-        options:{
-            data:{user_id:userId},
-            emailRedirectTo:window.location.origin + window.location.pathname.replace("register.html","")
+        if (users[key]) {
+            message.textContent = "😅 Oops! That User ID is already taken.";
+            message.className = "error-message";
+            return;
         }
+
+        if (password.length < 6) {
+            message.textContent = "🔐 Password needs at least 6 characters.";
+            message.className = "error-message";
+            return;
+        }
+
+        if (password !== confirm) {
+            message.textContent = "🙈 Those passwords are playing hide-and-seek! They don't match.";
+            message.className = "error-message";
+            return;
+        }
+
+        // Store a salted Web Crypto SHA-256 hash instead of the plain password.
+        const salt = crypto.randomUUID();
+        const encoded = new TextEncoder().encode(salt + password);
+        const digest = await crypto.subtle.digest("SHA-256", encoded);
+        const hash = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, "0")).join("");
+
+        users[key] = { userId, salt, hash };
+        saveUsers(users);
+
+        message.textContent = "🎉 Account created! Your little world is ready.";
+        message.className = "success-message";
+        registerForm.reset();
+
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 1200);
     });
+}
 
-    if(error){
-        message.textContent=error.message.includes("already registered")
-            ? "That User ID is already taken. Please choose another."
-            : error.message;
-        message.className="error-message";
-        return;
-    }
+// Login
+const loginForm = document.getElementById("loginForm");
+if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    message.textContent="Account created! You can now log in with your User ID. ❤️";
-    message.className="success-message";
-    registerForm.reset();
-});
+        const userId = document.getElementById("userId").value.trim();
+        const password = document.getElementById("password").value;
+        const message = document.getElementById("message");
+        const users = getUsers();
+        const account = users[normaliseUserId(userId)];
 
-document.getElementById("password"),showPassword=document.getElementById("showPassword");
-if(showPassword&&password)showPassword.addEventListener("click",()=>{
-    password.type=password.type==="password"?"text":"password";
-    showPassword.textContent=password.type==="password"?"Hide":"Show";
-});
+        if (!account) {
+            message.textContent = "🤔 Hmm... who are you? That User ID doesn't exist!";
+            message.className = "error-message funny-login-error";
+            shakeLoginCard();
+            return;
+        }
 
-const logout=document.getElementById("logout");
-if(logout)logout.addEventListener("click",async()=>{
-    await supabaseClient.auth.signOut();
-    location.href="index.html";
-});
+        const encoded = new TextEncoder().encode(account.salt + password);
+        const digest = await crypto.subtle.digest("SHA-256", encoded);
+        const hash = Array.from(new Uint8Array(digest)).map(b => b.toString(16).padStart(2, "0")).join("");
+
+        if (hash !== account.hash) {
+            const funnyMessages = [
+                "😂 Nice try! The password says NOPE!",
+                "🙈 Oops! Even the password doesn't recognize you!",
+                "🤣 Wrong password! Your keyboard is being suspicious!",
+                "😜 Almost! But that password isn't the secret handshake.",
+                "😂 Access denied! The password ran away!",
+                "🤭 Nope! Try again, detective!"
+            ];
+            message.textContent = funnyMessages[Math.floor(Math.random() * funnyMessages.length)];
+            message.className = "error-message funny-login-error";
+            shakeLoginCard();
+            return;
+        }
+
+        localStorage.setItem(SESSION_KEY, account.userId);
+        message.textContent = "🎉 Welcome back! Login successful ❤️";
+        message.className = "success-message";
+        setTimeout(() => {
+            window.location.href = "dashboard.html";
+        }, 650);
+    });
+}
+
+function shakeLoginCard() {
+    const panel = document.querySelector(".glass-panel");
+    if (!panel) return;
+    panel.classList.remove("login-error");
+    void panel.offsetWidth;
+    panel.classList.add("login-error");
+}
+
+// Password visibility
+const password = document.getElementById("password");
+const showPassword = document.getElementById("showPassword");
+if (showPassword && password) {
+    showPassword.addEventListener("click", () => {
+        password.type = password.type === "password" ? "text" : "password";
+        showPassword.textContent = password.type === "password" ? "Show" : "Hide";
+    });
+}
+
+// Logout
+const logout = document.getElementById("logout");
+if (logout) {
+    logout.addEventListener("click", () => {
+        localStorage.removeItem(SESSION_KEY);
+        location.href = "index.html";
+    });
+}
