@@ -57,9 +57,9 @@ if (enterBtn && welcomeScreen && loginWrapper) {
 
 // Authentication Logic
 // User ID is used in the UI. Supabase's email/password auth is kept internally
-// by mapping each User ID to a private internal auth address.
+// by mapping each User ID to a syntactically valid internal auth address.
 function userIdToAuthEmail(userId) {
-    return userId.trim().toLowerCase().replace(/[^a-z0-9._-]/g, "_") + "@vibemix.local";
+    return userId.trim().toLowerCase().replace(/[^a-z0-9._-]/g, "_") + "@vibemix.com";
 }
 
 const loginForm=document.getElementById("loginForm");
