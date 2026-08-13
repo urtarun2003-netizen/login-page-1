@@ -1,1 +1,42 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Dashboard</title><link rel="stylesheet" href="style.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><div class="dashboard"><h1>Welcome ❤️</h1><p>How are you feeling today?</p><div class="choice-container"><a class="choice happy-choice" href="happy.html">😊<span>Happy</span></a><a class="choice sad-choice" href="sad.html">😔<span>Sad</span></a></div><button class="logout" id="logout">Logout</button></div><script src="script.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Floating Background Particles -->
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 1s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 5s;"></div>
+    </div>
+
+    <div class="dashboard-container animate-in">
+        <div class="dashboard-header">
+            <h1>Welcome to Our Space ❤️</h1>
+            <p>How are you feeling today?</p>
+        </div>
+
+        <div class="choice-grid">
+            <a href="happy.html" class="choice-card happy-card">
+                <div class="emoji">😊</div>
+                <span>I'm Happy</span>
+            </a>
+            
+            <a href="sad.html" class="choice-card sad-card">
+                <div class="emoji">😔</div>
+                <span>I'm Sad</span>
+            </a>
+        </div>
+
+        <button class="logout-btn" id="logout">Sign Out</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

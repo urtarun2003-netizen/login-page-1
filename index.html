@@ -1,1 +1,59 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Secure Login</title><link rel="stylesheet" href="style.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script></head><body><div class="login-box"><h2>Login ❤️</h2><p class="small">Welcome back!</p><form id="loginForm"><label>Email</label><input id="email" type="email" required placeholder="Enter your email"><label>Password</label><div class="password-row"><input id="password" type="password" required placeholder="Enter password"><button type="button" id="showPassword">Show</button></div><button class="login-button" type="submit">Login</button><p id="message"></p></form><p class="account-link">Don't have an account? <a href="register.html">Create Account</a></p></div><script src="script.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Our World</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <!-- Floating Background Particles -->
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 4s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 7s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 3s;"></div>
+    </div>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="animate-in">
+        <div class="welcome-icon">✨</div>
+        <h1 class="welcome-title">Welcome to Our Little World ❤️</h1>
+        <p class="welcome-subtitle">A little place for smiles, memories, and everything in between.</p>
+        <button id="enter-btn">Enter</button>
+
+        <div id="welcome-transition" class="welcome-transition" aria-hidden="true">
+            <span class="welcome-sparkle">✨</span>
+            <span>Welcome to our little world ❤️</span>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-wrapper" class="hidden">
+        <div class="glass-panel">
+            <h2>Login</h2>
+            <p>Welcome back!</p>
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>User ID</label>
+                    <input id="userId" type="text" required autocomplete="username" placeholder="Enter your User ID">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <div class="password-row">
+                        <input id="password" type="password" required placeholder="Enter password">
+                        <button type="button" id="showPassword">Show</button>
+                    </div>
+                </div>
+                <button class="btn-primary" type="submit">Login</button>
+                <p id="message"></p>
+            </form>
+            <p class="account-link">Don't have an account? <a href="register.html">Create Account</a></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
